@@ -1,3 +1,5 @@
+import Test.QuickCheck
+
 fromJusts :: [Maybe a] -> [a]
 fromJusts [] = []
 fromJusts (Nothing:xs) = fromJusts xs
@@ -16,7 +18,15 @@ merge (x:xs) (y:ys) | x < y = x : merge xs (y:ys)
 
 split :: [a] -> ([a],[a])
 split [] = ([],[])
-split (xs) = ([xs !! i| i <- [0 .. length xs - 1], mod i 2 == 0],[xs !! i| i <- [0 .. length xs - 1], mod i 2 == 1])
+split (x:xs) = (x:ys, zs)
+    where
+        (zs, ys) = split xs
+
+myRepeat :: a -> [a]
+myRepeat x = x :(repeat x)
+
+prop_repeat :: a -> Int -> Property
+prop_repeat x n = n >= 0 ==> length (take n (repeat x)) == n
 
 squares :: [Integer]
 squares = [x * x | x <- [1..]]
