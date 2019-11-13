@@ -11,7 +11,7 @@ foldHead node pile (Pile x l r)       = pile (node x) (pile (foldHeap node pile 
 heapSize :: Heap a -> Int
 heapSize = foldHeap node pile where
     node :: Num b => a -> b
-    node _ = 1
+    node = const 1
 
     pile :: Num b => b -> b -> b
-    pile x y = x + y
+    pile = (+)
