@@ -13,51 +13,45 @@ foldr _ k [] = k
 foldr f k (x:xs) = f x (foldr f k xs)
 
 sum' :: [Integer] -> Integer
-sum' xs = foldr (+) 0 xs
+sum' = foldr (+) 0
 
 and :: [Bool] -> Bool
-and xs = foldr (&&) True xs
+and = foldr (&&) True
 
 or :: [Bool] -> Bool
-or xs = foldr (||) False xs
-
-f :: Int -> Bool
-f 0 = False
-f _ = True
+or = foldr (||) False
 
 all :: (a -> Bool) -> [a] -> Bool
-all p xs = foldr (\x y -> (&&) (p x) y) True xs
+all p = foldr ((&&) . p) True
 
 any :: (a -> Bool) -> [a] -> Bool
-any p xs = foldr (\x y -> (||) (p x) y) False xs
+any p = foldr ((||) . p) False
 
 length :: [a] -> Integer
-length xs = foldr (\x y -> y + 1) 0 xs
+length = foldr (const (+1)) 0
 
 snoc :: [a] -> a -> [a]
-snoc xs x = foldr (\a b -> a:b) [x] xs
+snoc xs x = xs ++ [x]
 
 reverse :: [a] -> [a]
-reverse [] = []
-reverse (x:xs) = snoc (reverse xs) x
+reverse = foldr (flip snoc) []
 
 filter :: (a -> Bool) -> [a] -> [a]
-filter p xs = foldr (\x y -> if p x then x:y else y) [] xs
+filter p = foldr consCheck [] where
+    --consCheck :: a -> [a] -> [a]
+    consCheck y ys | p y       = y:ys
+                   | otherwise = ys
 
 group :: Eq a => [a] -> [[a]]
-group xs = foldr f k xs where
+group = foldr f [] where
     f :: Eq a => a -> [[a]] -> [[a]]
     f x [] = [[x]]
     f x ((y:ys):yss) | x == y    = (x:y:ys):yss
                      | otherwise = [x]:((y:ys):yss)
-    k :: [[a]]
-    k = []
 
 transpose :: [[a]] -> [[a]]
-transpose xs = foldr f k xs where
+transpose = foldr f [] where
     f :: [a] -> [[a]] -> [[a]]
-    f [] _ = []
-    f (x:xs) (ys:yss) = (x : ys) : (f (xs) (yss))
+    f xs []  = map (:[]) xs
+    f xs xss = zipWith (:) xs xss
 
-    k :: [[a]]
-    k = foldr (\_ ys -> []:ys) [] xs
